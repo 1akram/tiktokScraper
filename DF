@@ -1,0 +1,37 @@
+ tiktok_m
+lr=tiktok_m
+lr=unwatermarked
+
+https://v16-webapp-prime.tiktok.com/video/tos/useast2a/tos-useast2a-pve-0068/o0og3IzJfYBPDnZrXIYGAAPCdODIUkQtoyMEah/?a=1988&ch=0&cr=0&dr=0&lr=unwatermarked&cd=0%7C0%7C0%7C0&cv=1&br=3390&bt=1695&cs=0&ds=6&ft=_RwJrBerq8ZmoE7XQc_vjQqoKAhLrus&mime_type=video_mp4&qs=0&rc=Njw7M2Y5N2RnNjU1NDM0N0BpMzRma2g6ZjpzajMzNzczM0AvLzAtXjA0NjMxMTQwXjY0YSMwci1icjRva2BgLS1kMTZzcw%3D%3D&btag=e00080000&expire=1685246151&l=2023052721535285230F1880F8E5DD4BA6&ply_type=2&policy=2&signature=2d96486b867bca8f08072b6be556fcdf&tk=tt_chain_token
+function downloadVideo(url,downloadPath) {
+  fetch(url)
+    .then(response => response.blob())
+    .then(blob => {
+      const videoUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = videoUrl;
+      anchor.download = downloadPath; 
+      anchor.click();
+      URL.revokeObjectURL(videoUrl);
+    })
+    .catch(error => {
+      console.error('Error downloading the video:', error);
+    });
+}
+ 
+downloadVideo(videoUrl,downloadPath);
+
+
+
+div[data-e2e="recommend-list-item-container"] #one-column-item-2 video
+
+function scrollToElement(elementId, blockOption) {
+  var element = document.getElementById(elementId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: blockOption });
+  }
+}
+
+
+
+scrollToElement('myElement', 'center');
