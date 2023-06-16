@@ -6,6 +6,8 @@ import os
 import pyperclip
 from selenium.webdriver.common.action_chains import ActionChains
 import random
+ 
+
 
 sleepTime=4
 def findElement(chromeBrowser, by, value, click=False):
@@ -90,18 +92,30 @@ def newTab(chromeBrowser):
        chromeBrowser.execute_script("window.open();")
     chromeBrowser.switch_to.window(chromeBrowser.window_handles[-1])
     return originalWindow
-
-def initChrome(lang='en,fr', windowSize='1280,720', userDataDir=None, chromedriver=None, userAgent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', profile='Person 1'):
+def createFolder(path):
+    if not os.path.exists(path):
+   
+        os.makedirs(path)
+def initChrome(lang='en,fr', windowSize='1280,720', userDataDir=None, chromedriver=None, userAgent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', profile='Person 1',downloadPath='/'):
    
     option = webdriver.ChromeOptions()
     option.add_argument("--lang="+lang)
     option.add_argument("--window-size="+windowSize)
+    # option.add_argument("download.default_directory:"+downloadPath)
     option.add_argument('--disable-blink-features=AutomationControlled')
-
+   
   #  option.add_argument("--user-data-dir="+userDataDir)
     option.add_argument("--profile-directory="+profile)
     option.add_argument("user-agent="+userAgent)
-    option.add_argument("Referer=https://www.leboncoin.fr/")
+    prefs = {"profile.default_content_settings.popups": 0,    
+        "download.default_directory":"C:\\Users\\Akram\\Desktop",  
+        "download.prompt_for_download": False,
+         'safebrowsing.enabled': False,
+         'safebrowsing.disable_download_protection': True,
+        "download.directory_upgrade": True}
+    # option.add_argument("download.default_directory=C:\\")
+    option.add_experimental_option("prefs",prefs)
+    option.add_argument("Referer=https://www.gpsuite.fr/")
     option.add_experimental_option("excludeSwitches", ["enable-automation"])
     option.add_experimental_option('useAutomationExtension', False)
     if not chromedriver:  # if driver not set it will use driver manager
@@ -118,20 +132,19 @@ def getUserDataDir():
     except:
         return None
  
-targetWebSite = 'https://www.tiktok.com/'
+targetWebSite = 'https://www.tiktok.com/en'
 chromedriver = 'chromedriver13.exe'
-
-chromeBrowser = initChrome(
-
-            profile="Person 1" ,userDataDir=getUserDataDir(),chromedriver=chromedriver  )
+createFolder('downloads')
+chromeBrowser = initChrome( profile="Person 1" ,userDataDir=getUserDataDir(),chromedriver=chromedriver,downloadPath= os.path.join(os.getcwd(), 'downloads') )
 chromeBrowser.get(targetWebSite)
 sleep(sleepTime)
- 
+
 elem =findElement(chromeBrowser,'css selector','div[data-e2e="recommend-list-item-container"] video',False)
 if(elem!=None):
     videoUrl = copyLink(chromeBrowser,elem)
     sleep(random.randint(3, 10))
     chromeBrowser.get(videoUrl)
+    counter=0
     while True:
 
         videoUrl=chromeBrowser.current_url
@@ -150,14 +163,15 @@ if(elem!=None):
             videoTime=extractVideoTime(chromeBrowser)
 
         sleepBeforeNextVideo=random.randint(int(videoTime/2),int(videoTime*3/4))
-        print(sleepBeforeNextVideo)
+      
         videoElement.click()#pause
         sleep(sleepTime)
         originalWindow=newTab(chromeBrowser)
         
         sleep(sleepTime)
         chromeBrowser.get('https://v16-webapp-prime.tiktok.com/')
-        result= downloadVideo(chromeBrowser,videoSrc,'v.mp4')
+        print(os.path.join(os.getcwd(), 'downloads', videoId+'.mp4'))
+        result= downloadVideo(chromeBrowser,videoSrc, videoId+'.mp4')
         if isinstance(result, str) and result.startswith("Error"):
             print("Error occurred:", result)
         sleep(sleepTime)
@@ -165,8 +179,10 @@ if(elem!=None):
         sleep(sleepTime)
         videoElement.click() # continue
         sleep(sleepBeforeNextVideo)
-  
+        counter+=1
+        print('counter ',counter )
         nextVideo(chromeBrowser)
+        sleep(sleepTime)
  
 
 
